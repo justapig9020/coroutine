@@ -1,6 +1,9 @@
 #include <setjmp.h>
 #include <stdio.h>
 
+//#define DEBUG
+#include "debug.h"
+
 #include "coroutine.h"
 
 enum State {
@@ -45,7 +48,7 @@ static void set_stack(struct RCB *rcb, int height) {
         set_stack(rcb, height - 1);
         return;
     }
-    printf("Routine %d: %p - %p\n", Routine_cnt, &_padding[0], &_padding[STACK_SIZE -1]);
+    dbg("Routine %d: %p - %p\n", Routine_cnt, &_padding[0], &_padding[STACK_SIZE -1]);
     int state = setjmp(rcb->contex);
     if (0 != state) {
         struct RCB *curr = &Routines[Current];
@@ -76,7 +79,7 @@ static int next_ready(int curr) {
 static void start_currnet_routine() {
     struct RCB *curr = &Routines[Current];
     curr->state = Running;
-    printf("Start %d\n", Current);
+    dbg("Start %d\n", Current);
     longjmp(curr->contex, 1);
 }
 
@@ -102,10 +105,10 @@ static void matrix() {
         start_currnet_routine();
         break;
     case Terminated:
-        printf("Routine %d has terminated\n", Current);
+        dbg("Routine %d has terminated\n", Current);
         terminate_current_routine();
         start_next_routine();
-        printf("All routine terminated\n");
+        dbg("All routine terminated\n");
         break;
     }
 }
