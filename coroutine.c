@@ -29,19 +29,6 @@ static struct RCB Routines[MAX_ROUTINE_CNT];
 static int Routine_cnt = 0;
 static int Current = 0;
 
-static char *state_to_string(enum State state) {
-    switch (state)
-    {
-    case Ready:
-        return "Ready";
-    case Running:
-        return "Running";
-    case Terminated:
-        return "Terminated";
-    }
-    return "";
-}
-
 static void set_stack(struct RCB *rcb, int height) {
     volatile char _padding[STACK_SIZE];
     if (height > 0) {
