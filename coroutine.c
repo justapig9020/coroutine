@@ -76,6 +76,7 @@ static int next_ready(int curr) {
 static void start_currnet_routine() {
     struct RCB *curr = &Routines[Current];
     curr->state = Running;
+    printf("Start %d\n", Current);
     longjmp(curr->contex, 1);
 }
 
@@ -86,10 +87,11 @@ static void terminate_current_routine() {
 }
 
 static void start_next_routine() {
-    Current = next_ready(Current);
-    if (0 > Current) {
+    int next = next_ready(Current);
+    if (0 > next) {
         return;
     }
+    Current = next;
     start_currnet_routine();
 }
 
@@ -116,7 +118,12 @@ void spawn(method func) {
 }
 
 void yield() {
-
+    struct RCB *curr = &Routines[Current];
+    curr->state = Ready;
+    int state = setjmp(curr->contex);
+    if (0 == state) {
+        start_next_routine();
+    }
 }
 
 void start() {
